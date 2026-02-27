@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VFTC - Sign In</title>
+
+<style>
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body {
+  background:#000;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.container {
+  background:#080808;
+  border-radius:16px;
+  padding:30px;
+  width:100%;
+  max-width:450px;
+  box-shadow:0 0 30px rgba(184,134,11,0.15);
+}
+
+.brand {
+  text-align:center;
+  font-size:32px;
+  font-weight:800;
+  color:#D4AF37;
+  margin-bottom:20px;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #333;
+  background:#121212;
+  color:#fff;
+  margin-bottom:15px;
+}
+
+button {
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#D4AF37,#B8860B);
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.link {
+  text-align:center;
+  margin-top:15px;
+}
+
+.link a {
+  color:#D4AF37;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="brand">
+  <svg width="120" height="140" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldShield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFEB3B" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#B8860B" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield shape -->
+  <path d="M60 10 Q10 40 10 80 Q10 110 40 130 Q60 140 80 130 Q110 110 110 80 Q110 40 60 10 Z" 
+        fill="url(#goldShield)" stroke="#B8860B" stroke-width="4"/>
+  
+  <!-- Inner glow/highlight -->
+  <ellipse cx="60" cy="60" rx="40" ry="50" fill="none" stroke="#FFF" stroke-width="6" opacity="0.4"/>
+  
+  <!-- VFTC text -->
+  <text x="60" y="75" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1a1a1a" text-anchor="middle">VFTC</text>
+  <text x="60" y="105" font-family="Arial, sans-serif" font-size="14" fill="#333" text-anchor="middle">SECURE</text>
+</svg>
+  
+  
+</div>
+
+<h2 style="text-align:center;">Welcome Back</h2>
+<p style="text-align:center; color:#aaa;">Sign in to your account</p>
+
+<form id="loginForm">
+
+<label>Email</label>
+<input type="email" id="email" required>
+
+<label>Password</label>
+<input type="password" id="password" required>
+
+<button type="submit">Sign In</button>
+
+<div class="link">
+<a href="register.html">Create new account</a>
+</div>
+
+</form>
+
+</div>
+
+<script>
+
+document.getElementById("loginForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  const validUser = users.find(user => user.email === email && user.password === password);
+
+  if(validUser){
+    localStorage.setItem("loggedInUser", JSON.stringify(validUser));
+    
+    alert("Login Successful!");
+    window.location.replace("dashboard.html");
+  } else {
+    alert("Invalid Email or Password");
+  }
+
+});
+
+</script>
+
+</body>
+</html>

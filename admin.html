@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VFTC Admin - Deposits</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px; border: 1px solid #444; text-align: left; }
+    th { background: #222; }
+    .approve { background: #22c55e; color: black; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .reject  { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .status-pending { color: #fbbf24; }
+    .status-approved { color: #22c55e; }
+  </style>
+</head>
+<body>
+
+<h2>Pending Deposit Requests</h2>
+
+<table id="pendingTable">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Email</th>
+      <th>Amount</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<div id="message" style="margin-top:20px; color:#fbbf24;"></div>
+
+<script>
+// Replace with YOUR published Apps Script web app URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwefHGlrZmK0sd7ozNqpJE-Kf9apCaoqz90vVyl-pnspbMFxIGqxeWWxWQ528RvuWdFvg/exec";
+
+async function loadPendingDeposits() {
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=get_pending`);
+    const data = await response.json();
+    
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    if (!data || !data.rows || data.rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No pending deposits</td></tr>';
+      return;
+    }
+
+    data.rows.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.timestamp || '-'}</td>
+        <td>${row.email || '-'}</td>
+        <td>₦${Number(row.amount).toLocaleString()}</td>
+        <td class="status-${row.status}">${row.status}</td>
+        <td>
+          ${row.status === 'pending' || row.status === 'user_confirmed_sent' ? `
+            <button class="approve" onclick="approveDeposit('${row.rowIndex}', ${row.amount}, '${row.email}')">Approve</button>
+            <button class="reject"  onclick="rejectDeposit('${row.rowIndex}')">Reject</button>
+          ` : '—'}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    document.getElementById("message").textContent = "Error loading deposits: " + err.message;
+  }
+}
+
+async function approveDeposit(rowIndex, amount, email) {
+  if (!confirm(`Approve ₦${amount.toLocaleString()} for ${email}?`)) return;
+
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "approve_deposit",
+        rowIndex: rowIndex,
+        amount: amount,
+        email: email
+      }),
+      headers: { "Content-Type": "text/plain;charset=utf-8" }
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert("Approved! User balance updated.");
+      loadPendingDeposits(); // refresh list
+    } else {
+      alert("Error: " + (result.error || "Unknown"));
+    }
+  } catch (err) {
+    alert("Connection error: " + err.message);
+  }
+}
+
+async function rejectDeposit(rowIndex) {
+  if (!confirm("Reject this deposit?")) return;
+
+  // Similar fetch call with action: "reject_deposit"
+  // ...
+}
+
+// Load list when page opens
+window.onload = loadPendingDeposits;
+</script>
+
+</body>
+</html>

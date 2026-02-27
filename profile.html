@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VFTC - Profile</title>
+  <style>
+    :root {
+      --bg: #000;
+      --card: #080808;
+      --text: #fff;
+      --muted: #aaa;
+      --border: #333;
+      --gold: #D4AF37;
+      --gold-dark: #B8860B;
+      --input: #121212;
+    }
+    [data-theme="light"] {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #212529;
+      --muted: #6c757d;
+      --border: #dee2e6;
+      --gold: #c9a227;
+      --gold-dark: #a67c00;
+      --input: #f1f3f5;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+    body {
+      background:var(--bg); color:var(--text); min-height:100vh; padding:16px;
+    }
+    .container {
+      background:var(--card); border-radius:16px; padding:24px; max-width:480px;
+      margin:0 auto; border:1px solid var(--border); box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    }
+    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+    h1 { font-size:22px; font-weight:600; }
+    .theme-btn, .close-btn { background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted); }
+    .profile-top { text-align:center; margin-bottom:32px; }
+    .pic-wrap {
+      position:relative; width:120px; height:120px; margin:0 auto 12px;
+    }
+    .pic {
+      width:100%; height:100%; border-radius:50%; object-fit:cover;
+      border:3px solid var(--gold); background:#222; display:none;
+    }
+    .pic-placeholder {
+      width:100%; height:100%; border-radius:50%; background:#222;
+      display:flex; align-items:center; justify-content:center; font-size:48px;
+    }
+    .upload-btn {
+      position:absolute; bottom:4px; right:4px; width:36px; height:36px;
+      background:var(--gold); color:#000; border-radius:50%; border:2px solid var(--card);
+      display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;
+    }
+    input[type="file"] { display:none; }
+    .form-group { margin-bottom:20px; }
+    label { display:block; margin-bottom:6px; font-size:14px; color:var(--muted); }
+    input {
+      width:100%; padding:12px; border-radius:10px; border:1px solid var(--border);
+      background:var(--input); color:var(--text); font-size:16px;
+    }
+    .pass-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .save-btn {
+      width:100%; padding:14px; margin-top:24px; border:none; border-radius:10px;
+      background:linear-gradient(135deg, var(--gold), var(--gold-dark)); color:#000;
+      font-weight:600; font-size:16px; cursor:pointer;
+    }
+    .save-btn:disabled { opacity:0.5; cursor:not-allowed; }
+    .msg { margin-top:12px; text-align:center; font-size:14px; }
+    .success { color:#28a745; }
+    .error { color:#dc3545; }
+  </style>
+</head>
+<body data-theme="dark">
+
+<div class="container">
+  <div class="header">
+    <h1>Profile</h1>
+    <div>
+      <button class="theme-btn" id="themeToggle">☀️</button>
+      
+      <button class="close-btn" onclick="location='dashboard.html'">×</button>
+    </div>
+  </div>
+
+  <div class="profile-top">
+    <div class="pic-wrap">
+      <img id="userPic" class="pic" src="" alt="Profile">
+      <div id="picPlaceholder" class="pic-placeholder">👤</div>
+      <label class="upload-btn" for="picUpload">+</label>
+      <input type="file" id="picUpload" accept="image/*">
+    </div>
+    <h3 id="fullName">Loading...</h3>
+  </div>
+
+  <form id="profForm">
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" id="fname">
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" id="lname">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="uemail" disabled>
+    </div>
+    <div class="form-group">
+      <label>Change Password (optional)</label>
+      <div class="pass-row">
+        <input type="password" id="newPass" placeholder="New password">
+        <input type="password" id="confPass" placeholder="Confirm">
+      </div>
+    </div>
+
+    <button type="submit" class="save-btn" id="saveBtn" disabled>Save Changes</button>
+    <div id="statusMsg" class="msg"></div>
+  </form>
+</div>
+<script src="theme.js"></script>
+<script>
+
+// Load user
+const email = localStorage.getItem("currentUserEmail");
+const users = JSON.parse(localStorage.getItem("users")) || [];
+const currentUser = users.find(u => u.email === email);
+
+if (!currentUser || !email) {
+  document.getElementById('statusMsg').textContent = "Not logged in";
+  document.getElementById('statusMsg').className = 'msg error';
+} else {
+  document.getElementById('fname').value = currentUser.firstName || '';
+  document.getElementById('lname').value = currentUser.lastName || '';
+  document.getElementById('uemail').value = currentUser.email || '';
+  document.getElementById('fullName').textContent = [currentUser.firstName, currentUser.lastName].filter(Boolean).join(' ') || 'User';
+
+
+  // Profile pic
+  const pic = document.getElementById('userPic');
+  const ph = document.getElementById('picPlaceholder');
+  const savedPic = localStorage.getItem(`pfp_${email}`);
+
+  if (savedPic) {
+    pic.src = savedPic;
+    pic.style.display = 'block';
+    ph.style.display = 'none';
+  }
+
+  document.getElementById('picUpload').onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const r = new FileReader();
+    r.onload = ev => {
+      setTimeout(() => {
+        pic.src = ev.target.result;
+        pic.style.display = 'block';
+        ph.style.display = 'none';
+        localStorage.setItem(`profilePic_${email}`, ev.target.result);
+        document.getElementById('saveBtn').disabled = false;
+      }, 200);
+    };
+    r.readAsDataURL(file);
+  };
+
+  // Change detection
+  const saveBtn = document.getElementById('saveBtn');
+  const msg = document.getElementById('statusMsg');
+
+  const orig = {
+    fn: currentUser.firstName || '',
+    ln: currentUser.lastName || '',
+    pic: savedPic || ''
+  };
+
+  function changed() {
+    return (
+      document.getElementById('fname').value.trim() !== orig.fn ||
+      document.getElementById('lname').value.trim() !== orig.ln ||
+      document.getElementById('newPass').value.trim() !== '' ||
+      (pic.src && pic.src !== orig.pic)
+    );
+  }
+
+  document.querySelectorAll('#profForm input').forEach(el => {
+    el.oninput = () => { saveBtn.disabled = !changed(); };
+  });
+  saveBtn.disabled = true;
+
+  // Save
+  document.getElementById('profForm').onsubmit = e => {
+    e.preventDefault();
+
+    const nf = document.getElementById('fname').value.trim();
+    const nl = document.getElementById('lname').value.trim();
+    const np = document.getElementById('newPass').value.trim();
+    const cp = document.getElementById('confPass').value.trim();
+
+    if (np || cp) {
+      if (np !== cp) {
+        msg.textContent = "Passwords don't match"; msg.className = 'msg error'; return;
+      }
+      if (np.length < 6) {
+        msg.textContent = "Password too short (min 6)"; msg.className = 'msg error'; return;
+      }
+    }
+
+    currentUser.firstName = nf;
+    currentUser.lastName = nl;
+    if (np) currentUser.password = np;
+
+    users[users.indexOf(currentUser)] = currentUser;
+    localStorage.setItem("users", JSON.stringify(users));
+
+    document.getElementById('fullName').textContent = [nf, nl].filter(Boolean).join(' ') || 'User';
+
+    document.getElementById('newPass').value = '';
+    document.getElementById('confPass').value = '';
+
+    orig.fn = nf; orig.ln = nl; orig.pic = pic.src || '';
+
+    msg.textContent = "Saved successfully"; msg.className = 'msg success';
+    saveBtn.disabled = true;
+  };
+}
+// ────────────────────────────────────────────────
+// Inside your existing <script> after loading user
+// ────────────────────────────────────────────────
+
+let initialPicSrc = savedPic || ''; // remember what was loaded at start
+
+// Profile pic upload handler
+document.getElementById('picUpload').onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const r = new FileReader();
+  r.onload = ev => {
+    const newDataUrl = ev.target.result;
+    
+    // Optional: size check (recommended)
+    if (newDataUrl.length > 1.5 * 1024 * 1024) { // ~1.5 MB
+      alert("Image is too large! Choose a smaller photo (under ~1 MB).");
+      return;
+    }
+    
+    pic.src = newDataUrl;
+    pic.style.display = 'block';
+    ph.style.display = 'none';
+    
+    // Save immediately (good practice)
+    localStorage.setItem(`profilePic_${email}`, newDataUrl);
+    
+    // Enable save button if picture actually changed or other fields changed
+    saveBtn.disabled = !changed();
+  };
+  r.readAsDataURL(file);
+};
+
+// Improved changed() function
+function changed() {
+  const currentFn = document.getElementById('fname').value.trim();
+  const currentLn = document.getElementById('lname').value.trim();
+  const newPassword = document.getElementById('newPass').value.trim();
+  
+  const nameChanged = currentFn !== orig.fn || currentLn !== orig.ln;
+  const passwordEntered = newPassword !== '';
+  const picChanged = pic.src && pic.src !== initialPicSrc;
+  
+  return nameChanged || passwordEntered || picChanged;
+}
+
+// Update original values only AFTER successful save
+// (this part stays the same)
+document.getElementById('profForm').onsubmit = e => {
+  e.preventDefault();
+  // ... your existing validation and save logic ...
+  
+  // After successful save:
+  initialPicSrc = pic.src || ''; // update what we consider "original"
+  orig.fn = nf;
+  orig.ln = nl;
+  // ... rest of your code ...
+};
+</script>
+</body>
+</html>

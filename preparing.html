@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preparing Payment Account</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #fff; text-align: center; }
+    .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #D4AF37; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    progress { width: 80%; height: 10px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <h2>Preparing Payment Account</h2>
+  <p>Please wait while we set up your payment...</p>
+  <progress max="100" value="60"></progress>
+  
+  <footer style="position: absolute; bottom: 20px; color: black;">
+    VFTC FINANCIAL SERVICES LTD
+  </footer>
+
+  <script>
+    setTimeout(() => {
+      window.location.href = "details.html";
+    }, 5000); // 5 seconds delay
+  </script>
+</body>
+</html>

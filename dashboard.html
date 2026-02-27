@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VFTC - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="welcome">
+      <!-- Small Gold Shield Logo for Dashboard -->
+<div style="width: 48px; height: 56px; margin-right: 12px;">
+  <svg width="100%" height="100%" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="goldShield" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFEB3B" />
+        <stop offset="50%" stop-color="#D4AF37" />
+        <stop offset="100%" stop-color="#B8860B" />
+      </linearGradient>
+      <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.6"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- Main shield shape -->
+    <path d="M60 10 Q10 40 10 80 Q10 110 40 130 Q60 140 80 130 Q110 110 110 80 Q110 40 60 10 Z" 
+          fill="url(#goldShield)" 
+          stroke="#B8860B" stroke-width="3.5" filter="url(#softGlow)"/>
+
+    <!-- Inner shine/highlight -->
+    <ellipse cx="60" cy="55" rx="38" ry="48" fill="none" stroke="#FFFDF0" stroke-width="5" opacity="0.35"/>
+
+    <!-- Small VFTC initials -->
+    <text x="60" y="78" font-family="Arial Black, sans-serif" font-size="28" font-weight="bold" 
+          fill="#1a1a1a" text-anchor="middle" letter-spacing="-1">
+      VFTC
+    </text>
+  </svg>
+</div>
+      <h2>HI <span id="username"></span></h2>
+      <span class="status">👋🏿</span>
+    </div>
+    <div class="nav-icons">
+      <div style="position: relative;">
+        <button class="icon-btn" onclick="toggleNotifications()">🔔</button>
+        <div id="notificationDropdown" class="notification-dropdown">
+          <div class="notification-item notification-unread">
+            <div class="notification-title">Account Activation Required</div>
+            <div class="notification-time">Oct 21, 03:40 PM</div>
+          </div>
+          <div class="notification-item">
+            <div class="notification-title">Top-Up Offer Available</div>
+            <div class="notification-time">Oct 20, 02:15 PM</div>
+          </div>
+          
+          <div class="notification-item">
+            <div class="notification-title">New Feature: Crypto Deposits</div>
+            <div class="notification-time">Oct 19, 10:00 AM</div>
+          </div>
+        </div>
+      </div>
+      <div style="position: relative;">
+        <button class="icon-btn" onclick="toggleSettings()">⚙️</button>
+     
+      
+        <div id="settingsDropdown" class="settings-dropdown">
+          <div class="settings-item" onclick="window.location.href='profile.html'">Profile</div>
+          <div class="settings-item" onclick="window.location.href='logout.html'">Logout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Small pending top-up notification (appears only when needed) -->
+<div id="pendingNotification" 
+     style="display:none; background:black; color: green; padding:10px 16px; margin:10px 16px; border-radius:10px; text-align:center; font-size:14px; border:1px solid black;">
+  <strong>Pending top-up:</strong> <span id="pendingInfo"></span>
+</div>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Balance Card -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+<div style="display: flex; align-items: center; gap: 8px;">
+  <div style="position: relative; width: 40px; height: 40px;">
+    <img id="dashboardProfilePic"
+         src=""
+         alt="Profile"
+         style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #D4AF37; display: none;" onclick="window.location.href='profile.html'">
+    <div id="dashPlaceholder" 
+         style="width: 100%; height: 100%; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid #D4AF37;" onclick="window.location.href='profile.html'">
+      👤
+    </div>
+  </div>
+  <span>Available Balance</span>
+</div>
+          <div style="font-size: 12px; color: #888;">your Balance</div>
+        </div>
+        <div 
+        <div class="card-actions">
+          <button onclick="window.location.href='dashboard.html'" class="btn btn-secondary">🔄 Refresh</button>
+        </div>
+      </div>
+   <div class="balance">
+  <div class="balance" id="balanceDisplay">
+    ₦••••••••••••
+   
+  
+</div>
+      <div class="card-actions">
+  <button class="btn btn-secondary" style="flex: 1;" onclick="openSendMoneyModal()">
+    🛰️ transfer Money
+  </button>
+  
+  <button class="btn btn-secondary" style="flex: 1;" onclick="openTopUpModal()">
+    💳 Top Up Wallet
+  </button>
+  
+  <button class="btn btn-secondary" style="flex: 1;" onclick="openAirtimeModal()">
+    📱 Buy Airtime
+  </button>
+</div>
+</div>
+  
+      <div class="offer-card" onclick="openTopUpModal()">
+        <div class="offer-icon">✨</div>
+        <div class="offer-text">
+          <strong>Top-Up Offer</strong><br>
+          <h5>Pay ₦10,000 → Get ₦20,000</h5>
+        </div>
+      </div>
+    </div>
+    
+          <div class="offer-card">
+        <div class="offer-icon">🏆</div>
+        <div class="offer-text">
+          <strong>welcome bonus</strong><br>
+          ₦16,400.80
+        </div>
+        <h6>+₦16,400.80</h6>
+      </div>
+      </div>
+    
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">📈</div>
+    <div class="stat-label">Total Sent</div>
+    <div class="stat-value" id="totalSent">₦0.00</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📉</div>
+    <div class="stat-label">Total Received</div>
+    <div class="stat-value" id="totalReceived">₦16,400.80</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📊</div>
+    <div class="stat-label">Transactions</div>
+    <div class="stat-value" id="txCount">0</div>
+  </div>
+  
+<!-- Transaction History -->
+<div class="card1">
+  <div class="section-title">
+    <span class="icon" onclick="window.location.href='admin.html'">🕒</span>
+    Transaction History
+  </div>
+  
+<div class="empty-state" id="txContainer">
+  <!-- Transactions will appear here -->
+</div>
+</div>
+
+  <!-- Floating Chat Button -->
+  <div class="chat-float" onclick="openChat()">
+    💬
+  </div>
+  
+  <!-- Chat Modal -->
+  <div id="chatModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>💬</span>
+          <span>VFTC Support</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <span style="background: #00c853; color: #000; padding: 2px 6px; border-radius: 12px; font-size: 12px;">Online</span>
+          <button class="close-btn" onclick="closeChat()">×</button>
+        </div>
+      </div>
+      <div class="chat-body">
+        <div class="message received">
+          <div class="message-text">Hello! How can I help you today?</div>
+          <div class="message-time">10:00</div>
+        </div>
+      </div>
+      <div class="chat-footer">
+        <input type="text" placeholder="Type your message..." class="chat-input" />
+        <button class="send-btn" onclick="sendMessage()">➡️</button>
+      </div>
+    </div>
+  </div>
+  
+<!-- Top Up Modal -->
+<div id="topUpModal" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 420px; border-radius: 20px; overflow: hidden; background: #0f0f17;">
+    <div style="padding: 20px; background: linear-gradient(135deg, #1e1e2e, #141422); color: white;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 20px;">Fund Wallet</h3>
+        <button onclick="closeTopUpModal()" style="background:none;border:none;color:white;font-size:28px;cursor:pointer;">×</button>
+      </div>
+    </div>
+
+    <div style="padding: 24px;">
+      <div style="text-align: center; margin-bottom: 28px;">
+        <div style="color: #9ca3af; font-size: 15px; margin-bottom: 8px;">Enter Amount (₦)</div>
+     <input type="tel" id="depositAmount" placeholder="Enter amount" value="10,000"
+       style="font-size: 36px; font-weight: bold; text-align: center; width: 100%; 
+              background: #1a1a24; border: 2px solid #2d2d44; border-radius: 16px; 
+              color: white; padding: 16px;" 
+       oninput="formatAndLimitAmount(this)" 
+       maxlength="13" />
+      </div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; inset:0; background:rgba(10,10,15,0.94); 
+                                z-index:9999; justify-content:center; align-items:center; 
+                                flex-direction:column; color:white;">
+  <div style="width:64px; height:64px; border:6px solid #374151; border-top:6px solid #22c55e; 
+              border-radius:50%; animation:spin 1s linear infinite;"></div>
+  <p style="margin-top:24px; font-size:1.2rem; font-weight:500;">Preparing deposit instructions...</p>
+  <p style="margin-top:8px; font-size:0.95rem; color:#9ca3af;">Please wait</p>
+</div>
+
+<style>
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+
+      <!-- Optional: proof upload (you can add back later) -->
+      <!--
+      <div style="margin: 24px 0;">
+        <label style="display:block; color:#9ca3af; margin-bottom:10px; font-size:14px;">
+          Upload Payment Proof (recommended)
+        </label>
+        <input type="file" id="proofFile" accept="image/*,.pdf"
+               style="width:100%; padding:14px; background:#1a1a24; color:white; 
+                      border:1px solid #2d2d44; border-radius:12px;" />
+      </div>
+      -->
+
+      <button onclick="startDepositProcess()"
+              style="width:100%; padding:18px; font-size:17px; font-weight:bold; 
+                     background:#fbbf24; color:#1e1b4b; border:none; border-radius:999px; 
+                     cursor:pointer; box-shadow:0 4px 20px rgba(251,191,36,0.3);">
+        Confirm & Proceed
+      </button>
+
+      <p style="text-align:center; color:#9ca3af; font-size:13px; margin-top:20px;">
+        Manual verification • Usually approved in 5–60 minutes
+      </p>
+    </div>
+  </div>
+</div>
+   
+    </div>
+  </div>
+</div>
+        
+        <!-- Bank Transfer Section -->
+        <div id="bankTransfer" class="bank-transfer">
+          <div class="bank-info">
+            <div class="bank-field">
+              <div class="field-label">Account Number</div>
+              <div class="field-value" id="bankAccount">7076464276</div>
+              <button class="copy-btn" onclick="copyText('bankAccount')">📋</button>
+            </div>
+            <div class="bank-field">
+              <div class="field-label">Account Holder</div>
+              <div class="field-value" id="bankHolder">ABDULSAMAD ADEKOLA IBRAHIM</div>
+              <button class="copy-btn" onclick="copyText('bankHolder')">📋</button>
+            </div>
+            <div class="bank-field">
+              <div class="field-label">Bank Name</div>
+              <div class="field-value">OPAY</div>
+
+            </div>
+                    <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="confirmTopUp()">
+          Deposit ₦<span id="confirmAmount">10,000.00</span>
+        </button>
+          </div>
+          <div class="deposit-from-exchange">
+            <div class="deposit-icon">⬇️</div>
+            <div>
+              <div class="deposit-text">Deposit from exchange</div>
+              <div class="deposit-subtext">By direct transfer from your account</div>
+            </div>
+          </div>
+        </div>
+        
+   
+  
+  <!-- Send Money Modal -->
+  <div id="sendMoneyModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Enter Account Details</h3>
+        <button class="close-btn" onclick="closeSendMoneyModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: #2a0000; color: #ff6b6b; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+          <span>⚠️</span>
+          <div>
+            <strong>NOTE</strong><br>
+            you must top up  at least 1,500 before you can transfer funds
+          </div>
+        </div>
+        
+        
+<div style="margin-bottom: 15px;">
+  <label style="display: block; color: #ddd; margin-bottom: 5px; font-size: 14px;">Select Bank</label>
+  <select id="bank" class="bank-select" onchange="checkForm()">
+    <option value="">Choose a bank</option>
+    <option value="access">Access Bank Plc</option>
+    <option value="wema">Wema Bank Plc</option>
+    <option value="kuda">Kuda Bank</option>
+    <option value="opay">OPay Digital Services Limited</option>
+    <option value="palmpay">PalmPay</option>
+    <option value="moniepoint">Moniepoint</option>
+  </select>
+</div>
+
+<div style="margin-bottom: 15px;">
+  <label style="display: block; color: #ddd; margin-bottom: 5px; font-size: 14px;">Account Number</label>
+  <input type="tel" id="accountNumber" placeholder="0000000000" class="account-number" 
+         oninput="verifyAccount(); checkForm()" maxlength="10" />
+</div>
+
+<div style="margin-bottom: 15px;">
+  <label style="display: block; color: #ddd; margin-bottom: 5px; font-size: 14px;">Account Name</label>
+  <input type="text" id="accountName" placeholder="Full name" class="account-number" 
+         oninput="verifyName(); checkForm()" />
+</div>
+
+<div style="margin-bottom: 15px;">
+  <label style="display: block; color: #ddd; margin-bottom: 5px; font-size: 14px;">Amount (₦)</label>
+  <input type="tel" id="amount" placeholder="5,000" class="account-number" 
+         oninput="verifyAmount(); checkForm()" maxlength="10" />
+</div>
+
+<button id="proceedBtn" class="btn-primary" style="width: 100%;" disabled>
+  Proceed to transfer
+</button>
+
+      </div>
+    </div>
+  </div>
+ <!-- Airtime Modal -->
+<div id="airtimeModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Buy Airtime</h3>
+      <button class="close-btn" onclick="closeAirtimeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <label>Network</label>
+      <select id="network" class="bank-select">
+        <option value="MTN">MTN</option>
+        <option value="Airtel">Airtel</option>
+        <option value="Glo">Glo</option>
+        <option value="9mobile">9mobile</option>
+      </select>
+
+      <label>Phone Number</label>
+      <input type="text" id="phoneNumber" class="amount-input" placeholder="number">
+
+      <label>Amount</label>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px;">
+        <button class="btn airtime-btn" onclick="setAirtimeAmount(this,100)">₦100</button>
+        <button class="btn airtime-btn" onclick="setAirtimeAmount(this,200)">₦200</button>
+        <button class="btn airtime-btn" onclick="setAirtimeAmount(this,500)">₦500</button>
+        <button class="btn airtime-btn" onclick="setAirtimeAmount(this,1000)">₦1000</button>
+        <button class="btn airtime-btn" onclick="setAirtimeAmount(this,2000)">₦2000</button>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <div style="margin-bottom:8px;color:#ddd;">Select Network</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+          <div class="network-btn" onclick="selectNetwork(this,'MTN')">
+            <img src="images/mtn.png" alt="MTN">
+            <span>MTN</span>
+          </div>
+          <div class="network-btn" onclick="selectNetwork(this,'Airtel')">
+            <img src="images/airtel.png" alt="Airtel">
+            <span>Airtel</span>
+          </div>
+          <div class="network-btn" onclick="selectNetwork(this,'Glo')">
+            <img src="images/glo.png" alt="Glo">
+            <span>Glo</span>
+          </div>
+          <div class="network-btn" onclick="selectNetwork(this,'9mobile')">
+            <img src="images/9mobile.jpeg" alt="9mobile">
+            <span>9mobile</span>
+          </div>
+        </div>
+      </div>
+
+      <input type="number" id="airtimeAmount" class="amount-input" placeholder="Enter amount">
+
+    <button class="btn-primary" style="width:100%;" onclick="buyAirtime()">
+  Buy Airtime
+</button>
+    </div>
+  </div>
+</div>
+
+<!-- Airtime Coming Soon Popup -->
+<div id="airtimeComingSoon" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width: 360px; text-align: center; padding: 32px 24px; border-radius: 16px;">
+    <div style="font-size: 48px; margin-bottom: 16px;">🚧✨</div>
+    <h2 style="margin: 0 0 12px; font-size: 24px;">Coming Soon</h2>
+    <p style="margin: 0 0 28px; color: #ccc; line-height: 1.5;">
+      Airtime recharge is currently under development.<br>
+      We're working to make it available very soon — thank you for your patience!
+    </p>
+    <button class="btn-primary" style="min-width: 160px; padding: 12px 24px;"
+            onclick="document.getElementById('airtimeComingSoon').style.display='none'; closeAirtimeModal();">
+      Got It
+    </button>
+  </div>
+</div>
+<script src="core.js"></script>
+ <script src="app.js"></script>
+<script src="transaction.js"></script>
+<script src="theme.js"></script>
+</body>
+<script>
+// ────────────────────────────────────────────────
+// TRANSACTION STATS & HISTORY – FIXED & WORKING
+// ────────────────────────────────────────────────
+
+let transactions = [];
+
+// Load transactions from localStorage
+function loadTransactions() {
+  const email = localStorage.getItem("currentUserEmail");
+  if (!email) return;
+
+  const key = `transactions_${email}`;
+  transactions = JSON.parse(localStorage.getItem(key)) || [];
+
+  updateStats();
+  renderTransactions();
+}
+
+// Save transactions
+function saveTransactions() {
+  const email = localStorage.getItem("currentUserEmail");
+  if (!email) return;
+
+  const key = `transactions_${email}`;
+  localStorage.setItem(key, JSON.stringify(transactions));
+}
+
+// Update stats (Total Sent, Total Received, Count)
+function updateStats() {
+  let totalSent = 0;
+  let totalReceived = 0;
+
+  transactions.forEach(tx => {
+    if (tx.amount > 0) {
+      totalReceived += tx.amount;
+    } else {
+      totalSent += Math.abs(tx.amount);
+    }
+  });
+
+  // Add welcome bonus if missing
+  const hasWelcome = transactions.some(tx => tx.type === "Welcome Bonus");
+  if (!hasWelcome) {
+    totalReceived += 16400.80;
+  }
+
+  document.getElementById("totalSent").textContent = 
+    "₦" + totalSent.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  document.getElementById("totalReceived").textContent = 
+    "₦" + totalReceived.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  document.getElementById("txCount").textContent = 
+    transactions.length + (!hasWelcome ? 1 : 0);
+}
+
+// Render transaction history list
+function renderTransactions() {
+  const container = document.getElementById("txContainer");
+  if (!container) return;
+
+  if (transactions.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:40px 20px; color:#888;">
+        <h3>No transactions yet</h3>
+        <p>Your activity will appear here.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '<ol style="list-style:none; padding:0; margin:0;">';
+  transactions.slice().reverse().forEach(tx => {
+    const isPositive = tx.amount > 0;
+    const sign = isPositive ? '+' : '-';
+    const color = isPositive ? '#22c55e' : '#ef4444';
+
+    html += `
+      <li style="padding:12px 16px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:600; color:${color};">${sign}${Math.abs(tx.amount).toLocaleString('en-NG', {minimumFractionDigits:2})}</div>
+          <div style="font-size:13px; color:#aaa; margin-top:4px;">${tx.type || 'Transaction'}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:13px; color:#888;">${tx.date || '—'}</div>
+          <div style="font-size:12px; color:${tx.status === 'success' ? '#22c55e' : '#ef4444'}; margin-top:2px;">
+            ${tx.status || 'Pending'}
+          </div>
+        </div>
+      </li>
+    `;
+  });
+  html += '</ol>';
+  container.innerHTML = html;
+}
+
+// Add transaction (call this after transfer or deposit)
+function addTransaction(type, amount, status = 'success') {
+  const date = new Date().toLocaleString('en-NG', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+
+  transactions.push({ type, amount, status, date });
+  saveTransactions();
+  updateStats();
+  renderTransactions();
+}
+
+// Load on page open
+document.addEventListener("DOMContentLoaded", () => {
+  loadTransactions();
+  toggleBalance(); // keep your balance toggle
+});
+
+// Add welcome bonus automatically if missing
+document.addEventListener("DOMContentLoaded", () => {
+  if (transactions.length === 0) {
+    addTransaction("Welcome Bonus", 16400.80, "success");
+  }
+});
+</script>
+<script>
+  // Handle deposit button
+  
+  // Optional: "sh balance on dashboard load (in case approved)
+  document.addEventListener("DOMContentLoaded", () => {
+    toggleBalance(); // or call your balance refresh if needed
+  });
+function confirmTopUp() {
+  const amountInput = document.getElementById("topUpAmount");
+  const amount = parseFloat(amountInput.value) || 0;
+  
+  if (amount <= 0) {
+    alert("Enter a valid amount");
+    return;
+  }
+  
+  const email = localStorage.getItem("currentUserEmail");
+  if (!email) {
+    alert("Please login first");
+    return;
+  }
+  
+  const url = "https://script.google.com/macros/s/AKfycbwefHGlrZmK0sd7ozNqpJE-Kf9apCaoqz90vVyl-pnspbMFxIGqxeWWxWQ528RvuWdFvg/exec"; // ← paste fresh URL
+  
+  fetch(url, {
+      method: "POST",
+      redirect: "follow",
+      body: JSON.stringify({ email: email, amount: amount, action: "deposit" }),
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8" // ← critical for iOS Safari
+      }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        alert("Request sent! ₦" + amount.toLocaleString() + " – waiting for admin approval.");
+        // close modal
+        document.getElementById("topUpModal").style.display = "none";
+        // optional: show pending notice
+      } else {
+        alert("Error: " + (data.error || "Unknown problem"));
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Connection failed – check internet or try again later.\nDetails: " + err.message);
+    });
+}
+</script>
+
+  <script>
+    // Load profile picture in dashboard (matches the key used in profile.html)
+    document.addEventListener("DOMContentLoaded", function() {
+      const email = localStorage.getItem("currentUserEmail");
+      if (!email) return;
+      
+      // Try both possible keys (in case of previous versions)
+      const savedPic = localStorage.getItem(`pfp_${email}`) || localStorage.getItem(`profilePic_${email}`);
+      
+      const img = document.getElementById("dashboardProfilePic");
+      const ph = document.getElementById("dashPlaceholder");
+      
+      if (savedPic && img && ph) {
+        // Extra delay + reflow for mobile reliability
+        setTimeout(() => {
+          img.src = savedPic;
+          img.style.display = "block";
+          ph.style.display = "none";
+          // Force mobile browser to redraw
+          img.style.opacity = "0.99";
+          setTimeout(() => { img.style.opacity = "1"; }, 50);
+        }, 400);
+      }
+    });
+  </script>
+  
+
+<script>
+
+
+
+// BUY AIRTIME
+// ────────────────────────────────────────────────
+
+
+
+function startDepositProcess() {
+  const amountInput = document.getElementById('depositAmount');
+  const rawValue = amountInput.value.replace(/,/g, '');
+  const amount = Number(rawValue) || 0;
+  
+  if (amount < 1000) {
+    alert("Minimum deposit is ₦1,000");
+    return;
+  }
+  
+  if (amount > 1000000) {
+    alert("Maximum deposit is ₦1,000,000");
+    return;
+  }
+  
+  const email = localStorage.getItem("currentUserEmail");
+  if (!email) {
+    alert("Please log in first");
+    closeTopUpModal();
+    return;
+  }
+  
+  const overlay = document.getElementById('loadingOverlay');
+  if (overlay) overlay.style.display = 'flex';
+  
+  const payload = {
+    email: email,
+    amount: amount,
+    action: "deposit_intent",
+    timestamp: new Date().toISOString()
+  };
+  
+  const url = "https://script.google.com/macros/s/AKfycbwL79hINRDt9Bi-KxN3BTB3npcvAFnQqGc5eirgBBd1I2wk2BNlQa9wfdHOgJCsIA_d/exec";
+  
+  fetch(url, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(payload),
+    headers: { "Content-Type": "text/plain;charset=utf-8" }
+  }).catch(() => {});
+  
+  setTimeout(() => {
+    if (overlay) overlay.style.display = 'none';
+    window.location.href = `deposit-confirmation.html?amount=${amount}&email=${encodeURIComponent(email)}`;
+  }, 3000);
+}
+function buyAirtime() {
+  // ONLY show the popup - nothing else
+  document.getElementById("airtimeComingSoon").style.display = "flex";
+}
+
+function closeAirtimeModal() {
+  document.getElementById("airtimeModal").style.display = "none";
+}
+function formatAmount(input) {
+  // Remove any non-digit characters except the ones we add
+  let value = input.value.replace(/[^0-9]/g, '');
+  
+  // If empty or zero, reset to empty
+  if (!value || value === '0') {
+    input.value = '';
+    return;
+  }
+  
+  // Convert to number and format with commas
+  let formatted = Number(value).toLocaleString('en-NG');
+  
+  // Update input value with formatted number
+  input.value = formatted;
+}
+
+
+
+function formatAndLimitAmount(input) {
+  // Remove everything except digits
+  let value = input.value.replace(/[^0-9]/g, '');
+  
+  // Convert to number
+  let num = Number(value);
+  
+  // Enforce maximum of 1,000,000
+  if (num > 1000000) {
+    num = 1000000;
+    value = '1000000';
+  }
+  
+  // Format with commas (or keep empty if no value)
+  let formatted = value ? Number(value).toLocaleString('en-NG') : '';
+  
+  // Update input
+  input.value = formatted;
+  
+  // Optional: visual feedback if max reached (red border for 1 sec)
+  if (num === 1000000) {
+    input.style.borderColor = '#ff4444';
+    setTimeout(() => {
+      input.style.borderColor = '#2d2d44';
+    }, 1000);
+  }
+}
+
+
